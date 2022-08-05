@@ -1,0 +1,70 @@
+# Caixa Eletrônico
+
+from Banco.Contas.Banco_de_Dados.Banco_de_Dados import Carteira, Conta, ContaCorrente, ContaInvestimento
+
+if __name__ == '__main__':
+    listaCarteiras = []
+    print('Bem vindos ao Banco de Investimento Hilário´s!'.center(50))
+    print('*' * 50)
+    while True:
+        print('(1) Cadastrar uma nova carteira')
+        print('(2) Listar as contas de uma carteira existente')
+        print('(3) Sair do programa')
+        print('*' * 50)
+        selecionaOpção = int(input('Digite a opção desejada: '))
+        print('*' * 50)
+
+        if selecionaOpção == 1:
+            investir = str(input('Qual o tipo de investimento? ')).upper().strip()
+            carteira = Carteira(investir)
+            resposta = str(input('Deseja cadastrar uma conta? [S/N] ')).upper().strip()
+            while (resposta == 'S'):
+                numero = input('Informe o número da conta a ser cadastrada: ')
+                titular = input('Informe o nome do titular: ')
+                saldo = float(input('Qual o valor do saldo inicial: R$ '))
+                tipoDeConta = input('Conta Normal (N), Conta Corrente (C) ou Conta Investimento (CI): ').upper().strip()
+                if tipoDeConta == 'N':
+                    carteira.addConta(Conta(numero, titular, saldo))
+                elif tipoDeConta == 'C':
+                    carteira.addConta(ContaCorrente(numero, titular, saldo))
+                elif tipoDeConta == 'CI':
+                    rendimento = float(input('Qual o rendimento mensal? '))
+                    carteira.addConta(ContaInvestimento(numero,titular, saldo, rendimento))
+                else:
+                    print('Essa letra não representa um Tipo de Conta Válida. Tente novamente.')
+
+                resposta = str(input('Deseja cadastrar uma conta? [S/N] ')).upper().strip()
+
+            listaCarteiras += [carteira]
+            print('*' * 50)
+            print(f'Carteira {investir} adicionada com sucesso!'.center(50))
+            print('*' * 50)
+        elif selecionaOpção == 2:
+            investir = input('Informe o investimento desejado: ').upper().strip()
+            print('*' * 50)
+            achou = False
+            for carteirinha in listaCarteiras:
+                if carteirinha.investimento == investir:
+                    achou = True
+                    if carteirinha.listaContas == []:
+                        print(f'Essa carteira {investir} não possui contas cadastradas!')
+                    else:
+                        for continha in carteirinha.listaContas:
+                            print(continha.retornaDados())
+            if not achou:
+                print('*' * 50)
+                print('Não existe carteira do tipo informado!'.center(50))
+                print('*' * 50)
+            print('\n')
+        elif selecionaOpção == 3:
+            print()
+            break
+        else:
+            print('*' * 51)
+            print('Não exite essa opção. Selecione uma opção válida!'.center(51))
+            print('*' * 51)
+        input('Digite ENTER para continuar!')
+        print('*' * 50)
+    print('*' * 50)
+    print('Volte sempre ao Banco de Investimento Hilário´s!'.center(50))
+    print('*' * 50)
