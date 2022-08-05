@@ -1,0 +1,139 @@
+class Carteira:
+    def __init__(self, investimento):
+        self.__investimento = investimento
+        self.__listaContas = []
+    
+    @property
+    def investimento(self):
+        return self.__investimento
+    
+    @investimento.setter
+    def investimento(self, investimento):
+        self.__investimento = investimento
+    
+    @property
+    def listaContas(self):
+        return self.__listaContas
+
+    def addConta(self, objetoConta):
+        if len(self.__listaContas) == 4:
+            print('*' * 50)
+            print('Não é possível ter mais de 4 contas!'.center(50))
+            print('*' * 50)
+        else:
+            self.__listaContas += [objetoConta]
+
+    def contasNegativas():
+        listaNegativas = []
+        for continha in self.__listaContas:
+            if continha.saldo < 0:
+                listaNegativas += [continha]
+        if len(listaNegativas) == 0:
+            print('Nenhuma conta está negativa nessa carteira!')
+        return listaNegativas
+
+
+class Conta:
+    def __init__(self, numero, nome, valor):
+        self.__numero = numero
+        self.__titular = nome
+        self.__saldo = valor
+
+    @property
+    def numero(self):
+        return self.__numero
+
+    @property
+    def titular(self):
+        partesNomes = self.__titular.split(' ')
+        tamanho = len(partesNomes)
+        return partesNomes[0] + ' ' + partesNomes[tamanho - 1]
+
+    @titular.setter
+    def titular(self, titular):
+        self.__titular = titular
+
+    @property
+    def saldo(self):
+        return self.__saldo
+
+    @saldo.setter
+    def saldo(self, saldo):
+        if saldo < 0:
+            print(f'Não foi possível alterar o saldo!')
+        else:
+            self.__saldo = saldo
+
+    def sacar(self, valor):
+        if (valor > self.__saldo):
+            print(f'Não foi possível sacar, pois seu saldo é insuficiente!')
+        else:
+            self.__saldo -= valor
+
+    def depositar(self, valor):
+        if (valor < 0):
+            print(f'Não é possível depositar valor MENOR ou IGUAL a ZERO!')
+        else:
+            self.__saldo += valor
+
+    def retornaDados(self):
+        return f'Número: {self.numero}\nNome do Titular: {self.titular}\nSaldo da Conta: R$ {float(self.saldo):.2f}'
+
+
+class ContaCorrente(Conta):
+    contador = 0
+
+    def __init__(self, numero, nome, valor):
+        super().__init__(numero, nome, valor)
+        self.__limite = 2000
+        ContaCorrente.contador += 1
+
+    @property
+    def limite(self):
+        return f'R$ {self.__limite:.2f}'
+
+    def saldoTotal(self):
+        return self.saldo + self.__limite
+
+    @limite.setter
+    def limite(self, limite):
+        if (limite < 0):
+            print('Não exite limite de conta negativo!')
+        else:
+            self.__limite = limite
+
+    def sacar(self, valor):
+        if (valor > (self.saldoTotal())):
+            print(f'Não foi possível sacar, pois seu saldo é insuficiente!')
+        else:
+            if valor > self.saldo:
+                if (valor <= self.saldoTotal()):
+                    self.limite = (valor - self.saldo)
+                    self.saldo = 0
+                else:
+                    print(f'Não foi possível sacar, pois seu saldo é insuficiente!')
+            else:
+                self.saldo -= valor
+
+    def retornaDados(self):
+        return f'{super().retornaDados()} + Limite: {self.limite}'
+
+
+class ContaInvestimento(Conta):
+    def __init__(self, numero, nome, valor, rendimento):
+        super().__init__(numero, nome, valor)
+        self.__rendimento = rendimento
+
+    @property
+    def rendimento(self):
+        return self.__rendimento
+
+    @rendimento.setter
+    def rendimento(self, rendimento):
+        self.__rendimento = rendimento # % e não 0.06
+
+    def quantoRendimento(self):
+        self.saldo *= self.__rendimento
+
+    def retornaDados(self):
+        return f'{super().retornaDados()} + Rendimento: {self.rendimento} % a.m.\n\n'
